@@ -12,6 +12,9 @@
             --accent: #ff2d75;
             --glow: #00ff88;
             --cell-size: 30px;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
         }
 
         * {
@@ -27,8 +30,9 @@
             align-items: center;
             justify-content: center;
             background: radial-gradient(circle at 50% 50%, #1a0a3e, #0a0118);
-            color: #fff;
+            color: var(--text-primary);
             overflow: hidden;
+            position: relative;
         }
 
         body::before {
@@ -57,17 +61,69 @@
             }
         }
 
-        .wrap {
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
             display: flex;
-            gap: 24px;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
             position: relative;
             z-index: 1;
         }
 
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin: 0;
+            background: linear-gradient(135deg, #ff2d75, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(255, 45, 117, 0.5);
+            position: relative;
+            display: inline-block;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ff2d75, #00ff88, transparent);
+            border-radius: 3px;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .board-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+
         .board {
             background: linear-gradient(145deg, #1a0a3e, #0d0520);
-            padding: 24px;
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(255, 45, 117, 0.3), 0 0 40px rgba(0, 255, 136, 0.2);
             border: 2px solid rgba(255, 45, 117, 0.3);
@@ -132,47 +188,42 @@
             image-rendering: crisp-edges;
         }
 
-        .side {
-            width: 280px;
-            background: linear-gradient(145deg, #1a0a3e, #0d0520);
-            padding: 20px;
-            border-radius: 20px;
+        .info-panel {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            border: 2px solid rgba(255, 45, 117, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            gap: 20px;
+            width: 100%;
+            max-width: 300px;
         }
 
-        h1 {
-            font-size: 28px;
-            margin: 0;
-            background: linear-gradient(135deg, #ff2d75, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(255, 45, 117, 0.5);
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
-        .score {
-            display: flex;
-            gap: 12px;
-        }
-
-        .card {
+        .stat-card {
             background: linear-gradient(135deg, #1f0d3a, #0a0520);
-            padding: 16px;
-            border-radius: 12px;
-            flex: 1;
+            padding: 18px;
+            border-radius: 16px;
             border: 1px solid rgba(255, 45, 117, 0.2);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .card::before {
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -194,37 +245,77 @@
             }
         }
 
-        .card-label {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 8px;
         }
 
-        .card-value {
+        .stat-value {
             font-weight: 900;
             font-size: 32px;
-            margin-top: 4px;
             background: linear-gradient(135deg, #fff, #00ff88);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
 
-        .preview {
-            background: linear-gradient(135deg, #1f0d3a, #0a0520);
-            border-radius: 12px;
-            padding: 12px;
+        .level-badge {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ff88, #2d75ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        .preview-container {
             display: grid;
-            place-items: center;
-            min-height: 80px;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .preview-box {
+            background: linear-gradient(135deg, #1f0d3a, #0a0520);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 120px;
             border: 1px solid rgba(255, 45, 117, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .preview-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .btn {
             background: linear-gradient(135deg, #ff2d75, #d11d5f);
             border: none;
-            padding: 14px;
+            padding: 16px;
             border-radius: 12px;
             color: #fff;
             cursor: pointer;
@@ -236,6 +327,11 @@
             box-shadow: 0 4px 15px rgba(255, 45, 117, 0.4);
             position: relative;
             overflow: hidden;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn::before {
@@ -261,19 +357,88 @@
             height: 300px;
         }
 
-        .footer {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
-            text-align: center;
+        .btn-secondary {
+            background: linear-gradient(135deg, #2d75ff, #1a5fd9);
+            box-shadow: 0 4px 15px rgba(45, 117, 255, 0.4);
         }
 
-        .level-badge {
-            font-size: 36px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #00ff88, #2d75ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(45, 117, 255, 0.6);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .footer {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: center;
+            margin-top: 10px;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .mobile-controls {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 20px;
+        }
+
+        .mobile-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .mobile-btn:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+
+        .mobile-btn-rotate {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .mobile-btn-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .mobile-btn-down {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .mobile-btn-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .mobile-btn-drop {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .mobile-btn-hold {
+            grid-column: 3;
+            grid-row: 1;
         }
 
         .spark {
@@ -343,64 +508,198 @@
             }
         }
 
-        @media (max-width: 800px) {
-            .wrap {
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .game-area {
                 flex-direction: column;
                 align-items: center;
             }
 
-            .side {
-                width: 94%;
+            .info-panel {
+                max-width: 100%;
+                width: 100%;
             }
+
+            .stats,
+            .preview-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .controls {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .btn-group {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .board {
+                padding: 15px;
+            }
+
+            .stats,
+            .preview-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .mobile-controls {
+                display: grid;
+            }
+
+            .footer {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .stats,
+            .preview-container {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 14px;
+            }
+
+            .mobile-btn {
+                height: 50px;
+                font-size: 18px;
+            }
+        }
+
+        /* Game state indicators */
+        .game-state {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 40px;
+            border-radius: 16px;
+            text-align: center;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 45, 117, 0.5);
+            box-shadow: 0 0 30px rgba(255, 45, 117, 0.5);
+            display: none;
+        }
+
+        .game-state h2 {
+            color: #ff2d75;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .game-state p {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .game-over .game-state {
+            display: block;
+        }
+
+        .paused .game-state {
+            display: block;
         }
     </style>
 </head>
 
 <body>
-    <div class="wrap">
-        <div class="board" id="board">
-            <canvas id="game"></canvas>
+    <div class="container">
+        <div class="header">
+            <h1>TETRIS EPIC</h1>
         </div>
 
-        <div class="side">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1>TETRIS</h1>
-                <div class="level-badge" id="level">1</div>
-            </div>
-
-            <div class="score">
-                <div class="card">
-                    <div class="card-label">Score</div>
-                    <div class="card-value" id="score">0</div>
-                </div>
-                <div class="card">
-                    <div class="card-label">Lines</div>
-                    <div class="card-value" id="lines">0</div>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 12px;">
-                <div style="flex: 1;">
-                    <div class="card-label" style="margin-bottom: 8px;">NEXT</div>
-                    <div class="preview" id="next"></div>
-                </div>
-                <div style="flex: 1;">
-                    <div class="card-label" style="margin-bottom: 8px;">HOLD</div>
-                    <div class="preview" id="hold"></div>
+        <div class="game-area">
+            <div class="board-container">
+                <div class="board" id="board">
+                    <canvas id="game"></canvas>
+                    <div class="game-state" id="pause-state">
+                        <h2>PAUSED</h2>
+                        <p>Click Resume to continue</p>
+                    </div>
+                    <div class="game-state" id="game-over-state">
+                        <h2>GAME OVER</h2>
+                        <p id="final-score">Score: 0</p>
+                        <button class="btn" id="btn-restart">Play Again</button>
+                    </div>
                 </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button class="btn" id="btn-start">▶ START</button>
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn" id="btn-pause" style="flex: 1;">⏸ PAUSE</button>
-                    <button class="btn" id="btn-reset" style="flex: 1;">↻ RESET</button>
+            <div class="info-panel">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Score</div>
+                        <div class="stat-value" id="score">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value" id="lines">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Level</div>
+                        <div class="stat-value" id="level">1</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Speed</div>
+                        <div class="stat-value" id="speed">1x</div>
+                    </div>
+                </div>
+
+                <div class="preview-container">
+                    <div class="preview-box">
+                        <div class="preview-label">Next</div>
+                        <div class="preview-content" id="next"></div>
+                    </div>
+                    <div class="preview-box">
+                        <div class="preview-label">Hold</div>
+                        <div class="preview-content" id="hold"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" id="btn-start">
+                        <span>▶</span> START GAME
+                    </button>
+                    <div class="btn-group">
+                        <button class="btn" id="btn-pause">
+                            <span>⏸</span> PAUSE
+                        </button>
+                        <button class="btn btn-secondary" id="btn-reset">
+                            <span>↻</span> RESET
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="footer">
-                ← → Move | ↑ Rotate | ↓ Soft Drop | Space Hard Drop | C Hold
-            </div>
+        <div class="mobile-controls">
+            <div class="mobile-btn mobile-btn-rotate">↻</div>
+            <div class="mobile-btn mobile-btn-hold">H</div>
+            <div class="mobile-btn mobile-btn-left">←</div>
+            <div class="mobile-btn mobile-btn-down">↓</div>
+            <div class="mobile-btn mobile-btn-right">→</div>
+            <div class="mobile-btn mobile-btn-drop">↓</div>
+        </div>
+
+        <div class="footer">
+            <p>← → Move | ↑ Rotate | ↓ Soft Drop | Space Hard Drop | C Hold | P Pause</p>
+            <p>Tap buttons on mobile or use keyboard controls on desktop</p>
         </div>
     </div>
 
@@ -421,32 +720,40 @@
             const nextEl = document.getElementById('next');
             const holdEl = document.getElementById('hold');
 
-            // Enhanced Audio System with realistic sounds
+            // Enhanced Audio System - âm thanh chất lượng cao
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-            function playTone(freq, duration, type = 'sine', volume = 0.1) {
+            // Master volume control
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.3;
+            masterGain.connect(audioCtx.destination);
+
+            function playTone(freq, duration, type = 'sine', volume = 0.1, destination = masterGain) {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                gain.connect(destination);
                 osc.type = type;
                 osc.frequency.value = freq;
                 gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.start();
                 osc.stop(audioCtx.currentTime + duration);
             }
 
-            // Tiếng gạch cọ sát - như tiếng cưa/cắt gạch
+            // Tiếng gạch va chạm - sắc nét, có độ sâu
             function playGrindSound() {
-                const duration = 0.15;
-                // White noise cho hiệu ứng cọ sát
+                const now = audioCtx.currentTime;
+                const duration = 0.12;
+
+                // Tạo white noise chất lượng cao
                 const bufferSize = audioCtx.sampleRate * duration;
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
 
                 for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+                    const decay = Math.pow(1 - i / bufferSize, 1.5);
+                    data[i] = (Math.random() * 2 - 1) * decay;
                 }
 
                 const noise = audioCtx.createBufferSource();
@@ -455,77 +762,213 @@
 
                 noise.buffer = buffer;
                 filter.type = 'bandpass';
-                filter.frequency.value = 1200;
-                filter.Q.value = 3;
+                filter.frequency.value = 1800;
+                filter.Q.value = 4;
 
                 noise.connect(filter);
                 filter.connect(gain);
-                gain.connect(audioCtx.destination);
+                gain.connect(masterGain);
 
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-                noise.start();
-                noise.stop(audioCtx.currentTime + duration);
+                noise.start(now);
+                noise.stop(now + duration);
 
-                // Thêm tiếng va chạm kim loại
-                playTone(300, 0.08, 'square', 0.15);
-                setTimeout(() => playTone(250, 0.05, 'square', 0.1), 40);
-            }
-
-            // Tiếng bom nổ khi xóa hàng
-            function playExplosionSound(intensity = 1) {
-                const duration = 0.4 * intensity;
-
-                // Bass thump
+                // Tiếng "thud" bass khi chạm đất
                 const bass = audioCtx.createOscillator();
                 const bassGain = audioCtx.createGain();
                 bass.connect(bassGain);
-                bassGain.connect(audioCtx.destination);
+                bassGain.connect(masterGain);
                 bass.type = 'sine';
-                bass.frequency.setValueAtTime(100, audioCtx.currentTime);
-                bass.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + duration);
-                bassGain.gain.setValueAtTime(0.4 * intensity, audioCtx.currentTime);
-                bassGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                bass.start();
-                bass.stop(audioCtx.currentTime + duration);
+                bass.frequency.setValueAtTime(150, now);
+                bass.frequency.exponentialRampToValueAtTime(50, now + 0.1);
+                bassGain.gain.setValueAtTime(0.3, now);
+                bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                bass.start(now);
+                bass.stop(now + 0.1);
 
-                // Noise burst
+                // Tiếng "click" sắc
+                setTimeout(() => {
+                    const click = audioCtx.createOscillator();
+                    const clickGain = audioCtx.createGain();
+                    click.connect(clickGain);
+                    clickGain.connect(masterGain);
+                    click.type = 'square';
+                    click.frequency.value = 800;
+                    clickGain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    clickGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+                    click.start();
+                    click.stop(audioCtx.currentTime + 0.03);
+                }, 10);
+            }
+
+            // Tiếng bom nổ EPIC - có lớp, có chiều sâu
+            function playExplosionSound(intensity = 1) {
+                const now = audioCtx.currentTime;
+                const duration = 0.5 + (intensity * 0.15);
+
+                // Layer 1: Sub bass - tạo cảm giác rung
+                const subBass = audioCtx.createOscillator();
+                const subGain = audioCtx.createGain();
+                subBass.connect(subGain);
+                subGain.connect(masterGain);
+                subBass.type = 'sine';
+                subBass.frequency.setValueAtTime(60, now);
+                subBass.frequency.exponentialRampToValueAtTime(20, now + duration);
+                subGain.gain.setValueAtTime(0.5 * intensity, now);
+                subGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                subBass.start(now);
+                subBass.stop(now + duration);
+
+                // Layer 2: Mid bass punch
+                const midBass = audioCtx.createOscillator();
+                const midGain = audioCtx.createGain();
+                midBass.connect(midGain);
+                midGain.connect(masterGain);
+                midBass.type = 'triangle';
+                midBass.frequency.setValueAtTime(120, now);
+                midBass.frequency.exponentialRampToValueAtTime(40, now + duration * 0.6);
+                midGain.gain.setValueAtTime(0.4 * intensity, now);
+                midGain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.6);
+                midBass.start(now);
+                midBass.stop(now + duration * 0.6);
+
+                // Layer 3: Noise burst - tiếng "boom"
                 const bufferSize = audioCtx.sampleRate * duration;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
+                const buffer = audioCtx.createBuffer(2, bufferSize, audioCtx.sampleRate);
 
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+                for (let channel = 0; channel < 2; channel++) {
+                    const data = buffer.getChannelData(channel);
+                    for (let i = 0; i < bufferSize; i++) {
+                        const decay = Math.pow(1 - i / bufferSize, 2.5);
+                        data[i] = (Math.random() * 2 - 1) * decay;
+                    }
                 }
 
                 const noise = audioCtx.createBufferSource();
+                const noiseFilter = audioCtx.createBiquadFilter();
                 const noiseGain = audioCtx.createGain();
+
                 noise.buffer = buffer;
-                noise.connect(noiseGain);
-                noiseGain.connect(audioCtx.destination);
-                noiseGain.gain.setValueAtTime(0.3 * intensity, audioCtx.currentTime);
-                noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-                noise.start();
-                noise.stop(audioCtx.currentTime + duration);
+                noiseFilter.type = 'lowpass';
+                noiseFilter.frequency.setValueAtTime(2000, now);
+                noiseFilter.frequency.exponentialRampToValueAtTime(100, now + duration);
+                noiseFilter.Q.value = 1;
 
-                // Treble crack
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(masterGain);
+
+                noiseGain.gain.setValueAtTime(0.35 * intensity, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                noise.start(now);
+                noise.stop(now + duration);
+
+                // Layer 4: High freq crack - tiếng "tách"
                 setTimeout(() => {
-                    playTone(2000, 0.1, 'square', 0.2 * intensity);
-                }, 20);
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            const crack = audioCtx.createOscillator();
+                            const crackGain = audioCtx.createGain();
+                            crack.connect(crackGain);
+                            crackGain.connect(masterGain);
+                            crack.type = 'square';
+                            crack.frequency.value = 3000 - (i * 500);
+                            crackGain.gain.setValueAtTime(0.12 * intensity, audioCtx.currentTime);
+                            crackGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                            crack.start();
+                            crack.stop(audioCtx.currentTime + 0.08);
+                        }, i * 30);
+                    }
+                }, 25);
             }
 
+            // Tiếng xoay - mượt mà
             function playRotateSound() {
-                playTone(600, 0.04, 'sine', 0.08);
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.linearRampToValueAtTime(900, now + 0.05);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
             }
 
+            // Tiếng di chuyển - nhẹ nhàng
             function playMoveSound() {
-                playTone(400, 0.03, 'sine', 0.06);
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.type = 'sine';
+                osc.frequency.value = 500;
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                osc.start(now);
+                osc.stop(now + 0.04);
             }
 
+            // Tiếng game over - bi thảm
             function playGameOverSound() {
-                [400, 350, 300, 250, 200].forEach((f, i) => {
-                    setTimeout(() => playTone(f, 0.2, 'sawtooth', 0.15), i * 150);
+                const now = audioCtx.currentTime;
+                const notes = [440, 392, 349, 311, 277];
+
+                notes.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.type = 'sawtooth';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.3);
+                    }, i * 120);
+                });
+
+                // Thêm reverb effect với delay
+                setTimeout(() => {
+                    const rumble = audioCtx.createOscillator();
+                    const rumbleGain = audioCtx.createGain();
+                    rumble.connect(rumbleGain);
+                    rumbleGain.connect(masterGain);
+                    rumble.type = 'sine';
+                    rumble.frequency.value = 80;
+                    rumbleGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    rumbleGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+                    rumble.start();
+                    rumble.stop(audioCtx.currentTime + 1);
+                }, 200);
+            }
+
+            // Tiếng level up - phấn khích
+            function playLevelUpSound() {
+                const now = audioCtx.currentTime;
+                const melody = [523, 659, 784, 1047];
+
+                melody.forEach((freq, i) => {
+                    setTimeout(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.type = 'square';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.15);
+                    }, i * 80);
                 });
             }
 
