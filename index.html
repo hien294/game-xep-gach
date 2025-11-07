@@ -411,7 +411,7 @@
                     </div>
                     <div class="stat">
                         <span>Tốc độ:</span>
-                        <span class="stat-value" id="game-speed">B.thường</span>
+                        <span class="stat-value" id="game-speed">Bình thường</span>
                     </div>
                     <div class="stat">
                         <span>Khối:</span>
@@ -674,7 +674,7 @@
                 scoreElement.textContent = score;
                 linesElement.textContent = lines;
 
-                if (level < 3) speedElement.textContent = "B.thường";
+                if (level < 3) speedElement.textContent = "Bình thường";
                 else if (level < 6) speedElement.textContent = "Nhanh";
                 else if (level < 9) speedElement.textContent = "R.nhanh";
                 else speedElement.textContent = "C.nhanh";
@@ -900,7 +900,7 @@
             linesElement.textContent = lines;
             piecesElement.textContent = piecesUsed;
             timeElement.textContent = '00:00';
-            speedElement.textContent = 'B.thường';
+            speedElement.textContent = 'Bình thường';
 
             updatePauseButton();
             gameOverScreen.style.display = 'none';
