@@ -186,12 +186,6 @@
             background: linear-gradient(to bottom, #ff6b6b, #e74c3c);
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
         .stat {
             display: flex;
             justify-content: space-between;
@@ -407,23 +401,21 @@
 
                 <div class="info-card">
                     <h3><i class="fas fa-chart-bar"></i> THỐNG KÊ</h3>
-                    <div class="stats-grid">
-                        <div class="stat">
-                            <span>Đã xóa:</span>
-                            <span class="stat-value" id="lines-cleared">0</span>
-                        </div>
-                        <div class="stat">
-                            <span>Thời gian:</span>
-                            <span class="stat-value" id="game-time">00:00</span>
-                        </div>
-                        <div class="stat">
-                            <span>Tốc độ:</span>
-                            <span class="stat-value" id="game-speed">B.thường</span>
-                        </div>
-                        <div class="stat">
-                            <span>Khối:</span>
-                            <span class="stat-value" id="pieces-used">0</span>
-                        </div>
+                    <div class="stat">
+                        <span>Đã xóa:</span>
+                        <span class="stat-value" id="lines-cleared">0</span>
+                    </div>
+                    <div class="stat">
+                        <span>Thời gian:</span>
+                        <span class="stat-value" id="game-time">00:00</span>
+                    </div>
+                    <div class="stat">
+                        <span>Tốc độ:</span>
+                        <span class="stat-value" id="game-speed">B.thường</span>
+                    </div>
+                    <div class="stat">
+                        <span>Khối:</span>
+                        <span class="stat-value" id="pieces-used">0</span>
                     </div>
                 </div>
             </div>
