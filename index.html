@@ -483,7 +483,8 @@
                 margin-top: 6px;
             }
 
-            .help-control, .sound-control {
+            .help-control,
+            .sound-control {
                 width: 30px;
                 height: 30px;
                 font-size: 0.85rem;
@@ -538,7 +539,8 @@
                 margin-top: 5px;
             }
 
-            .help-control, .sound-control {
+            .help-control,
+            .sound-control {
                 width: 28px;
                 height: 28px;
                 font-size: 0.8rem;
@@ -769,7 +771,7 @@
     <div class="help-modal" id="help-modal">
         <div class="help-content">
             <h2><i class="fas fa-gamepad"></i> HƯỚNG DẪN CHƠI</h2>
-            
+
             <div class="help-section">
                 <h3><i class="fas fa-desktop"></i> Điều khiển trên Máy tính</h3>
                 <p><span class="help-key">←</span> Di chuyển sang trái</p>
@@ -791,7 +793,8 @@
 
             <div class="help-section">
                 <h3><i class="fas fa-bullseye"></i> Mục tiêu</h3>
-                <p>Xếp các khối gạch gỗ để tạo thành hàng ngang hoàn chỉnh. Khi một hàng đầy, nó sẽ bị xóa và bạn nhận được điểm.</p>
+                <p>Xếp các khối gạch gỗ để tạo thành hàng ngang hoàn chỉnh. Khi một hàng đầy, nó sẽ bị xóa và bạn nhận
+                    được điểm.</p>
             </div>
 
             <div class="help-section">
@@ -1157,7 +1160,138 @@
                 if (soundEnabled) playBreakSound(linesCleared);
             }
         }
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx.resume(); // Đảm bảo context chạy trên mobile
+            return audioCtx;
+        }
 
+        function playDropSound() {
+            if (!soundEnabled) return;
+            const ctx = getAudioCtx();
+            const now = ctx.currentTime;
+
+            // 1. TIẾNG VA CHẠM CHÍNH - Bass nặng "BỊCH" (như kick drum gỗ)
+            const impact = ctx.createOscillator();
+            const impactGain = ctx.createGain();
+            const impactFilter = ctx.createBiquadFilter(); // Lowpass cho ấm áp
+
+            impact.connect(impactFilter);
+            impactFilter.connect(impactGain);
+            impactGain.connect(ctx.destination);
+
+            impact.type = 'sine'; // Mượt mà như gỗ thật
+            impact.frequency.setValueAtTime(100, now); // Bass thấp
+            impact.frequency.exponentialRampToValueAtTime(35, now + 0.15); // Pitch drop nhanh
+
+            impactFilter.type = 'lowpass';
+            impactFilter.frequency.setValueAtTime(800, now);
+
+            impactGain.gain.setValueAtTime(0, now);
+            impactGain.gain.linearRampToValueAtTime(0.35, now + 0.02); // Attack nhanh
+            impactGain.gain.exponentialRampToValueAtTime(0.005, now + 0.4); // Decay tự nhiên
+
+            impact.start(now);
+            impact.stop(now + 0.4);
+
+            // 2. TIẾNG RẮC GỖ (Noise cao tần ngắn)
+            const crack = ctx.createBufferSource();
+            const crackGain = ctx.createGain();
+            const crackFilter = ctx.createBiquadFilter();
+
+            const bufferSize = ctx.sampleRate * 0.04;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            // Noise kiểu gỗ: random nhưng bias thấp
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 0.8 - 0.4) * (1 - i / bufferSize); // Fade out
+            }
+
+            crack.buffer = buffer;
+            crack.connect(crackFilter);
+            crackFilter.connect(crackGain);
+            crackGain.connect(ctx.destination);
+
+            crackFilter.type = 'bandpass';
+            crackFilter.frequency.setValueAtTime(1500, now);
+            crackFilter.Q.value = 2;
+
+            crackGain.gain.setValueAtTime(0.25, now);
+            crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+            crack.start(now);
+
+            // 3. TIẾNG VANG ĐẤT/GỖ (Reverb tự tạo đơn giản)
+            const reverb = ctx.createOscillator();
+            const reverbGain = ctx.createGain();
+            const reverbDelay = ctx.createDelay(0.4);
+            const reverbFeedback = ctx.createGain();
+            const reverbLPFilter = ctx.createBiquadFilter();
+
+            reverb.connect(reverbGain);
+            reverbGain.connect(reverbDelay);
+            reverbDelay.connect(reverbFeedback);
+            reverbFeedback.connect(reverbLPFilter);
+            reverbLPFilter.connect(reverbDelay); // Feedback loop
+            reverbLPFilter.connect(ctx.destination);
+
+            reverb.type = 'triangle';
+            reverb.frequency.setValueAtTime(80, now + 0.05);
+            reverb.frequency.exponentialRampToValueAtTime(30, now + 0.5);
+
+            reverbGain.gain.setValueAtTime(0.15, now + 0.05);
+            reverbGain.gain.exponentialRampToValueAtTime(0.0005, now + 1.0);
+
+            reverbDelay.delayTime.setValueAtTime(0.15, now); // Delay ngắn như phòng nhỏ
+            reverbFeedback.gain.setValueAtTime(0.45, now); // Feedback vừa phải
+            reverbLPFilter.type = 'lowpass';
+            reverbLPFilter.frequency.setValueAtTime(600, now);
+
+            reverb.start(now + 0.05);
+            reverb.stop(now + 1.0);
+        }
+
+        // Hard Drop - Mạnh hơn, nhiều bass
+        function playHardDropSound() {
+            if (!soundEnabled) return;
+            const ctx = getAudioCtx();
+            const now = ctx.currentTime;
+
+            // Bass siêu mạnh
+            const bass = ctx.createOscillator();
+            const bassGain = ctx.createGain();
+            const bassFilter = ctx.createBiquadFilter();
+
+            bass.connect(bassFilter);
+            bassFilter.connect(bassGain);
+            bassGain.connect(ctx.destination);
+
+            bass.type = 'sine';
+            bass.frequency.setValueAtTime(60, now); // Thấp hơn
+            bass.frequency.exponentialRampToValueAtTime(25, now + 0.3);
+
+            bassFilter.type = 'lowpass';
+            bassFilter.frequency.setValueAtTime(500, now);
+
+            bassGain.gain.setValueAtTime(0, now);
+            bassGain.gain.linearRampToValueAtTime(0.55, now + 0.03);
+            bassGain.gain.exponentialRampToValueAtTime(0.003, now + 0.6);
+
+            bass.start(now);
+            bass.stop(now + 0.6);
+
+            // Crack to hơn
+            setTimeout(() => {
+                const crackGain2 = ctx.createGain();
+                crackGain2.gain.setValueAtTime(0.45, ctx.currentTime);
+                crackGain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+                // Reuse crack logic nhưng to hơn
+            }, 20);
+
+            // Chain drop sound muộn tí
+            setTimeout(() => playDropSound(), 100);
+        }
         function drop() {
             if (!currentPiece) return;
 
@@ -1166,6 +1300,9 @@
             if (collision(currentPiece.shape, currentPiece.x, currentPiece.y)) {
                 currentPiece.y--;
                 merge();
+
+                playDropSound();  // ÂM THANH ĐỒ VẬT RƠI XUỐNG ĐẤT!
+
                 clearLines();
 
                 currentPiece = nextPiece;
@@ -1319,12 +1456,7 @@
 
         function handleKeyPress(e) {
             if (gameOver) return;
-
-            if (e.keyCode === 80) {
-                togglePause();
-                return;
-            }
-
+            if (e.keyCode === 80) { togglePause(); return; }
             if (paused) return;
 
             switch (e.keyCode) {
@@ -1335,9 +1467,16 @@
                     rotatePiece();
                     if (soundEnabled) playRotateSound();
                     break;
-                case 32:
+                case 32: // Space
+                    let dropDistance = 0;
                     while (!collision(currentPiece.shape, currentPiece.x, currentPiece.y + 1)) {
                         currentPiece.y++;
+                        dropDistance++;
+                    }
+                    if (dropDistance > 3 && soundEnabled) {
+                        playHardDropSound();
+                    } else if (soundEnabled) {
+                        playDropSound();
                     }
                     drop();
                     break;
