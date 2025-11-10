@@ -363,37 +363,32 @@
 
         .mobile-controls {
             display: none;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 8px;
         }
 
         .mobile-btn {
             height: 50px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             background: rgba(42, 58, 80, 0.8);
             border: 2px solid var(--accent-color);
         }
 
         .rotate-btn {
-            grid-column: 2;
-            grid-row: 1;
+            grid-column: 1;
         }
 
         .left-btn {
-            grid-column: 1;
-            grid-row: 2;
+            grid-column: 2;
         }
 
         .down-btn {
-            grid-column: 2;
-            grid-row: 2;
+            grid-column: 3;
         }
 
         .right-btn {
-            grid-column: 3;
-            grid-row: 2;
+            grid-column: 4;
         }
 
         @media (min-width: 768px) {
@@ -421,7 +416,9 @@
             }
 
             .game-container {
-                padding-bottom: 10px;
+                padding-bottom: 5px;
+                max-height: calc(100vh - 10px);
+                max-height: calc(100dvh - 10px);
             }
 
             .mobile-controls {
@@ -430,10 +427,12 @@
 
             .game-content {
                 grid-template-columns: 1fr;
+                gap: 8px;
             }
 
             .game-board-container {
                 grid-column: 1;
+                padding: 6px;
             }
 
             .info-panel {
@@ -441,25 +440,24 @@
             }
 
             .game-header {
-                padding: 5px 5px 8px 5px;
+                padding: 3px 5px 5px 5px;
             }
 
             .game-header h1 {
-                font-size: 1.2rem;
-                margin-bottom: 2px;
+                font-size: 1.1rem;
+                margin-bottom: 1px;
             }
 
             .game-header p {
-                font-size: 0.7rem;
+                font-size: 0.65rem;
             }
 
             #tetris {
                 max-width: 100%;
-                height: auto;
-            }
-
-            .game-board-container {
-                padding: 8px;
+                max-height: calc(100vh - 180px);
+                max-height: calc(100dvh - 180px);
+                width: auto !important;
+                height: auto !important;
             }
 
             .game-board-container::before {
@@ -468,23 +466,36 @@
                 text-align: center;
                 color: var(--primary-color);
                 font-weight: bold;
-                font-size: 0.85rem;
-                margin-bottom: 8px;
-                padding: 6px;
+                font-size: 0.8rem;
+                margin-bottom: 5px;
+                padding: 4px;
                 background: rgba(42, 58, 80, 0.6);
-                border-radius: 6px;
+                border-radius: 5px;
             }
 
             .mobile-btn {
-                height: 48px;
-                font-size: 1.1rem;
+                height: 52px;
+                font-size: 1.2rem;
             }
 
-            .help-control,
+            .mobile-controls {
+                gap: 6px;
+                margin-top: 6px;
+            }
+
+            .help-control, .sound-control {
+                width: 30px;
+                height: 30px;
+                font-size: 0.85rem;
+                top: 6px;
+            }
+
+            .help-control {
+                left: 6px;
+            }
+
             .sound-control {
-                width: 32px;
-                height: 32px;
-                font-size: 0.9rem;
+                right: 6px;
             }
         }
 
@@ -494,81 +505,165 @@
             }
 
             .game-container {
-                gap: 10px;
+                gap: 6px;
+                max-height: calc(100vh - 6px);
+                max-height: calc(100dvh - 6px);
             }
 
-            .game-header h1 {
-                font-size: 1.1rem;
-            }
-
-            .game-header p {
-                font-size: 0.65rem;
-            }
-
-            .mobile-btn {
-                height: 45px;
-                font-size: 1rem;
-            }
-
-            .help-control,
-            .sound-control {
-                width: 30px;
-                height: 30px;
-                font-size: 0.85rem;
-                top: 8px;
-            }
-
-            .help-control {
-                left: 8px;
-            }
-
-            .sound-control {
-                right: 8px;
-            }
-
-            .game-board-container::before {
-                font-size: 0.75rem;
-                padding: 5px;
-                margin-bottom: 6px;
-            }
-        }
-
-        @media (max-height: 700px) and (max-width: 767px) {
             .game-header {
-                padding: 3px;
+                padding: 2px 3px 3px 3px;
             }
 
             .game-header h1 {
                 font-size: 1rem;
-                margin-bottom: 1px;
+                margin-bottom: 0;
             }
 
             .game-header p {
                 font-size: 0.6rem;
             }
 
+            #tetris {
+                max-height: calc(100vh - 165px);
+                max-height: calc(100dvh - 165px);
+            }
+
             .mobile-btn {
-                height: 42px;
-                font-size: 0.95rem;
+                height: 48px;
+                font-size: 1.1rem;
+            }
+
+            .mobile-controls {
+                gap: 5px;
+                margin-top: 5px;
+            }
+
+            .help-control, .sound-control {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+                top: 5px;
+            }
+
+            .help-control {
+                left: 5px;
+            }
+
+            .sound-control {
+                right: 5px;
             }
 
             .game-board-container {
-                padding: 6px;
+                padding: 5px;
+            }
+
+            .game-board-container::before {
+                font-size: 0.7rem;
+                padding: 3px;
+                margin-bottom: 4px;
+            }
+        }
+
+        @media (max-height: 700px) and (max-width: 767px) {
+            .game-header {
+                padding: 2px 3px 3px 3px;
+            }
+
+            .game-header h1 {
+                font-size: 0.95rem;
+                margin-bottom: 0;
+            }
+
+            .game-header p {
+                font-size: 0.55rem;
+            }
+
+            #tetris {
+                max-height: calc(100vh - 155px);
+                max-height: calc(100dvh - 155px);
+            }
+
+            .mobile-btn {
+                height: 44px;
+                font-size: 1rem;
+            }
+
+            .mobile-controls {
+                gap: 4px;
+                margin-top: 4px;
+            }
+
+            .game-board-container {
+                padding: 4px;
+            }
+
+            .game-board-container::before {
+                font-size: 0.65rem;
+                padding: 2px;
+                margin-bottom: 3px;
             }
         }
 
         @media (max-height: 600px) and (max-width: 767px) {
             .game-header h1 {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
 
             .game-header p {
                 display: none;
             }
 
+            #tetris {
+                max-height: calc(100vh - 145px);
+                max-height: calc(100dvh - 145px);
+            }
+
             .mobile-btn {
-                height: 38px;
+                height: 40px;
                 font-size: 0.9rem;
+            }
+
+            .mobile-controls {
+                gap: 3px;
+                margin-top: 3px;
+            }
+
+            .game-board-container::before {
+                font-size: 0.6rem;
+                padding: 2px;
+                margin-bottom: 2px;
+            }
+        }
+
+        @media (max-height: 650px) and (max-width: 767px) {
+            #tetris {
+                max-height: calc(100vh - 150px);
+                max-height: calc(100dvh - 150px);
+            }
+
+            .mobile-btn {
+                height: 42px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-height: 550px) and (max-width: 767px) {
+            .game-header {
+                padding: 1px 3px 2px 3px;
+            }
+
+            .game-header h1 {
+                font-size: 0.75rem;
+            }
+
+            #tetris {
+                max-height: calc(100vh - 130px);
+                max-height: calc(100dvh - 130px);
+            }
+
+            .mobile-btn {
+                height: 36px;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -674,7 +769,7 @@
     <div class="help-modal" id="help-modal">
         <div class="help-content">
             <h2><i class="fas fa-gamepad"></i> HƯỚNG DẪN CHƠI</h2>
-
+            
             <div class="help-section">
                 <h3><i class="fas fa-desktop"></i> Điều khiển trên Máy tính</h3>
                 <p><span class="help-key">←</span> Di chuyển sang trái</p>
@@ -696,8 +791,7 @@
 
             <div class="help-section">
                 <h3><i class="fas fa-bullseye"></i> Mục tiêu</h3>
-                <p>Xếp các khối gạch gỗ để tạo thành hàng ngang hoàn chỉnh. Khi một hàng đầy, nó sẽ bị xóa và bạn nhận
-                    được điểm.</p>
+                <p>Xếp các khối gạch gỗ để tạo thành hàng ngang hoàn chỉnh. Khi một hàng đầy, nó sẽ bị xóa và bạn nhận được điểm.</p>
             </div>
 
             <div class="help-section">
