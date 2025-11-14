@@ -185,8 +185,8 @@
 
             <div class="name-input-group">
                 <input type="text" id="player-name-input" class="name-input" placeholder="Nhập tên của bạn..."
-                    maxlength="20" inputmode="text" lang="vi" autocorrect="off" autocapitalize="words"
-                    spellcheck="false">
+                    maxlength="20" inputmode="text" enterkeyhint="done" autocorrect="off" autocapitalize="off"
+                    spellcheck="false" autocomplete="off">
             </div>
 
             <div class="name-buttons">
@@ -1091,18 +1091,45 @@
             nameModal.style.display = 'flex';
             nameModal.classList.add('show');
 
-            setTimeout(() => {
-                nameInput.focus();
-                nameInput.select();
-                if ('ontouchstart' in window) {
-                    nameInput.dispatchEvent(new Event('touchstart'));
+            // BƯỚC 1: BẮT BUỘC NGƯỜI DÙNG PHẢI BẤM VÀO MODAL ĐỂ MỞ BÀN PHÍM
+            const openKeyboard = (e) => {
+                if (e.target === nameModal || e.target.closest('.name-content')) {
+                    setTimeout(() => {
+                        nameInput.focus();
+                        nameInput.select();
+                    }, 100);
+                    nameModal.removeEventListener('click', openKeyboard);
+                    nameModal.removeEventListener('touchstart', openKeyboard);
                 }
-            }, 300);
+            };
+
+            nameModal.addEventListener('click', openKeyboard);
+            nameModal.addEventListener('touchstart', openKeyboard);
+
+            // BƯỚC 2: TỰ ĐỘNG MỞ KHI BẤM NÚT "LƯU KỶ LỤC"
+            nameSubmit.onclick = async () => {
+                const name = nameInput.value.trim() || 'Vô Danh';
+                await saveScore(name, scoreToSave);
+                shootConfetti();
+                hideNameModal();
+                setTimeout(() => document.getElementById('leaderboard-toggle').click(), 600);
+            };
+
+            // BƯỚC 3: ENTER = LƯU
+            nameInput.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    nameSubmit.click();
+                }
+            };
         }
 
         function hideNameModal() {
             nameModal.classList.remove('show');
-            setTimeout(() => nameModal.style.display = 'none', 300);
+            setTimeout(() => {
+                nameModal.style.display = 'none';
+                nameInput.value = '';
+            }, 300);
         }
 
         function shootConfetti() {
