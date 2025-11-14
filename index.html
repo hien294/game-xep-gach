@@ -8,6 +8,9 @@
     <link rel="icon" href="/game-xep-gach/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <!-- 🔥 FIREBASE SDK - THÊM VÀO ĐÂY -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 </head>
 
 <body>
@@ -181,8 +184,7 @@
             </div>
 
             <div class="name-input-group">
-                <input type="text" id="player-name-input" class="name-input" placeholder="Nhập tên của bạn..."
-                    maxlength="20">
+                <input type="text" id="player-name-input" class="name-input" placeholder="Nhập tên của bạn..." maxlength="20" autocomplete="name" autocorrect="off" autocapitalize="words" spellcheck="false">
             </div>
 
             <div class="name-buttons">
@@ -981,41 +983,69 @@
 
         startGame();
 
-        // ================= BẢNG XẾP HẠNG + MODAL SIÊU CHẮC =================
-        const LEADERBOARD_KEY = 'gachgo_final_2025';
+        // 🔥 FIREBASE LEADERBOARD - THÊM VÀO CUỐI SCRIPT
+        const firebaseConfig = {
+            apiKey: "AIzaSyDk7XkS6L654uUcnb6k9K5tbknVAWXXToo",
+            authDomain: "gach-go-leaderboard.firebaseapp.com",
+            databaseURL: "https://gach-go-leaderboard-default-rtdb.firebaseio.com",
+            projectId: "gach-go-leaderboard",
+            storageBucket: "gach-go-leaderboard.firebasestorage.app",
+            messagingSenderId: "101884931250",
+            appId: "1:101884931250:web:435acc78d3892a9fc5adab"
+        };
 
-        function loadTop10() {
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const leaderboardRef = db.ref('leaderboard');
+
+        // Firebase Functions
+        async function loadTop10() {
             try {
-                const data = localStorage.getItem(LEADERBOARD_KEY);
-                return data ? JSON.parse(data).sort((a, b) => b.score - a.score).slice(0, 10) : [];
-            } catch { return []; }
+                const snapshot = await leaderboardRef.orderByChild('score').limitToLast(10).once('value');
+                const data = [];
+                snapshot.forEach(child => data.push({ key: child.key, ...child.val() }));
+                return data.reverse();
+            } catch (error) {
+                console.error("Lỗi load leaderboard:", error);
+                return [];
+            }
         }
 
-        function saveTop10(list) {
-            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(list));
+        async function saveScore(name, score) {
+            const player = {
+                name: name.slice(0, 20),
+                score: score,
+                date: new Date().toISOString()
+            };
+            await leaderboardRef.push(player);
         }
 
-        // Render BXH
-        function renderLeaderboard() {
-            const list = document.getElementById('leaderboard-list');
-            list.innerHTML = '<div class="loading-leaderboard"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+        async function checkHighScore(score) {
+            const top10 = await loadTop10();
+            return top10.length < 10 || score > (top10[9]?.score || 0);
+        }
 
-            setTimeout(() => {
-                const top10 = loadTop10();
-                list.innerHTML = top10.length === 0 ?
-                    `<div class="empty-leaderboard">
+        async function renderLeaderboard() {
+            const listEl = document.getElementById('leaderboard-list');
+            listEl.innerHTML = '<div class="loading-leaderboard"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+
+            try {
+                const top10 = await loadTop10();
+                if (top10.length === 0) {
+                    listEl.innerHTML = `<div class="empty-leaderboard">
                 <i class="fas fa-trophy"></i>
                 <p>Chưa có kỷ lục nào!</p>
                 <p class="empty-subtitle">Bạn sẽ là #1!</p>
-            </div>` :
-                    top10.map((p, i) => `
+            </div>`;
+                } else {
+                    listEl.innerHTML = top10.map((p, i) => `
                 <div class="leaderboard-item ${i < 3 ? 'top-' + (i + 1) : ''}">
                     <div class="rank-medal">
                         <span class="rank-number">${i + 1}</span>
                         ${i < 3 ? '<i class="fas fa-medal medal"></i>' : ''}
                     </div>
                     <div class="player-info">
-                        <div class="player-name">${p.name}</div>
+                        <div class="player-name">${escapeHtml(p.name)}</div>
                         <div class="player-meta">
                             <span class="play-date">${new Date(p.date).toLocaleString('vi-VN')}</span>
                         </div>
@@ -1023,10 +1053,19 @@
                     <div class="player-score">${p.score}</div>
                 </div>
             `).join('');
-            }, 500);
+                }
+            } catch (error) {
+                listEl.innerHTML = `<div class="empty-leaderboard"><p>Lỗi kết nối!</p></div>`;
+            }
         }
 
-        // MODAL NHẬP TÊN
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Modal functions
         const nameModal = document.getElementById('name-modal');
         const nameInput = document.getElementById('player-name-input');
         const nameSubmit = document.getElementById('name-submit-btn');
@@ -1034,26 +1073,16 @@
         const scoreEl = document.getElementById('new-high-score');
         const rankEl = document.getElementById('new-rank');
         const rankInfo = document.getElementById('rank-info');
-
         let scoreToSave = 0;
 
         function showNameModal(score) {
-            console.log('🎖️ MODAL - ĐIỂM:', score);
             scoreToSave = score;
             scoreEl.textContent = score;
 
-            const top10 = loadTop10();
-            let rank = 1;
-            for (let p of top10) {
-                if (score <= p.score) rank++;
-                else break;
-            }
-
-            rankEl.textContent = rank;
+            // Tính rank (ước lượng)
+            rankEl.textContent = 1;
             rankInfo.style.display = 'block';
             nameInput.value = '';
-
-            // HIỆN MODAL RÕ RÀNG
             nameModal.style.display = 'flex';
             nameModal.classList.add('show');
             setTimeout(() => nameInput.focus(), 300);
@@ -1063,6 +1092,7 @@
             nameModal.classList.remove('show');
             setTimeout(() => nameModal.style.display = 'none', 300);
         }
+
         function shootConfetti() {
             const modal = document.querySelector('.name-modal');
             for (let i = 0; i < 50; i++) {
@@ -1075,50 +1105,23 @@
                 setTimeout(() => confetti.remove(), 2000);
             }
         }
-        // SUBMIT
-        nameSubmit.onclick = () => {
-            const name = nameInput.value.trim() || 'Người chơi #' + Date.now() % 10000;
-            const player = { name: name.slice(0, 15), score: scoreToSave, date: new Date().toISOString() };
 
-            let top10 = loadTop10();
-            top10.push(player);
-            top10.sort((a, b) => b.score - a.score);
-            saveTop10(top10.slice(0, 10));
-
-            console.log('✅ LƯU THÀNH CÔNG:', player);
-            hideNameModal();
-            renderLeaderboard(); // Refresh BXH
-        };
-
-        // SKIP CŨNG LƯU
-        nameSubmit.onclick = () => {
-            let name = nameInput.value.trim();
-            if (!name) name = 'Vô Danh';
-
-            const player = {
-                name: name.slice(0, 20),
-                score: scoreToSave,
-                date: new Date().toISOString()
-            };
-
-            let top10 = loadTop10();
-            top10.push(player);
-            top10.sort((a, b) => b.score - a.score);
-            saveTop10(top10.slice(0, 10));
-
-            console.log('LƯU:', player);
+        // Event listeners
+        nameSubmit.onclick = async () => {
+            const name = nameInput.value.trim() || 'Vô Danh';
+            await saveScore(name, scoreToSave);
             shootConfetti();
             hideNameModal();
-
-            setTimeout(() => {
-                document.getElementById('leaderboard-toggle').click();
-            }, 600);
+            setTimeout(() => document.getElementById('leaderboard-toggle').click(), 600);
         };
 
-        // Enter submit
+        nameSkip.onclick = async () => {
+            await saveScore('Vô Danh', scoreToSave);
+            hideNameModal();
+        };
+
         nameInput.onkeypress = e => e.key === 'Enter' && nameSubmit.click();
 
-        // Events
         document.getElementById('leaderboard-toggle').onclick = () => {
             renderLeaderboard();
             document.getElementById('leaderboard-modal').style.display = 'flex';
@@ -1132,32 +1135,24 @@
             if (e.target.id === 'leaderboard-modal') e.target.style.display = 'none';
         };
 
-        // GAME OVER
-        function triggerGameOver() {
-            console.log('🏁 GAME OVER CUỐI:', score);
-            gameOver = true;  // Giữ nguyên biến gốc
-            document.getElementById('game-over').style.display = 'flex';
-            document.getElementById('final-score').textContent = score;
+        // Game Over với Firebase
+        async function triggerGameOver() {
+            console.log('🏁 GAME OVER:', score);
+            isGameOver = true;
+            gameOverScreen.style.display = 'flex';
+            finalScoreElement.textContent = score;
 
-            const top10 = loadTop10();
-            const minScore = top10[9]?.score || 0;
-
-            console.log('BXH:', top10.length, 'người. Min:', minScore);
-
-            if (top10.length < 10 || score > minScore) {
-                console.log('TOP 10! Modal...');
+            if (await checkHighScore(score)) {
                 setTimeout(() => showNameModal(score), 1000);
             }
         }
 
-        // THAY THẾ HÀM DROP GỐC
-        const oldDrop = drop;
+        // Override drop function
+        const originalDrop = drop;
         drop = function () {
-            oldDrop.call(this);
+            originalDrop.call(this);
 
-            // KIỂM TRA GAME OVER
             if (currentPiece && collision(currentPiece.shape, currentPiece.x, currentPiece.y)) {
-                console.log('🔥 DETECT GAME OVER!');
                 setTimeout(triggerGameOver, 300);
             }
         };
