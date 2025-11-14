@@ -73,6 +73,10 @@ body {
     position: relative;
 }
 
+#player-name-input {
+    ime-mode: inactive;
+}
+
 .game-board {
     display: flex;
     justify-content: center;
