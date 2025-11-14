@@ -1004,17 +1004,12 @@
         // Firebase Functions
         async function loadTop10() {
             try {
-                // SỬA: Lấy tất cả + sort client-side (an toàn nhất)
                 const snapshot = await leaderboardRef.once('value');
                 const data = [];
-                snapshot.child('leaderboard').forEach(child => {
+                snapshot.forEach(child => {
                     data.push({ key: child.key, ...child.val() });
                 });
-
-                // Sort theo score DESC + lấy top 10
-                return data
-                    .sort((a, b) => b.score - a.score)
-                    .slice(0, 10);
+                return data.sort((a, b) => b.score - a.score).slice(0, 10);
             } catch (error) {
                 console.error("Lỗi load leaderboard:", error);
                 return [];
