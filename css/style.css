@@ -825,6 +825,10 @@ canvas {
     caret-color: var(--text-light) !important;
     -webkit-user-select: text !important;
     user-select: text !important;
+    ime-mode: auto !important;
+    -webkit-ime-mode: auto !important;
+    /* Cho phép tất cả input methods */
+    -webkit-text-size-adjust: 100% !important;
 }
 
 #player-name-input:focus {

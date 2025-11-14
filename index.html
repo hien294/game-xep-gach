@@ -184,7 +184,7 @@
             </div>
 
             <div class="name-input-group">
-                <input type="text" id="player-name-input" maxlength="20" placeholder="Nhập tên của bạn..." />
+                <input type="text" id="player-name-input" maxlength="20" placeholder="Nhập tên của bạn..." autocomplete="off" />
             </div>
 
             <div class="name-buttons">
@@ -1100,6 +1100,17 @@
 
         // Xóa các handlers cũ gây vấn đề focus
         // Input giờ hoạt động bình thường với mọi bàn phím
+
+        // Fix input để nhận tất cả ký tự (Tiếng Việt, English, etc)
+        nameInput.addEventListener('input', (e) => {
+            // Cho phép tất cả ký tự
+            e.target.value = e.target.value;
+        });
+
+        // Xử lý compositionend cho IME (khi user xong soạn Tiếng Việt)
+        nameInput.addEventListener('compositionend', (e) => {
+            e.target.value = e.target.value;
+        });
 
         function hideNameModal() {
             nameModal.classList.remove('show');
