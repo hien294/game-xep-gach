@@ -1004,10 +1004,17 @@
         // Firebase Functions
         async function loadTop10() {
             try {
-                const snapshot = await leaderboardRef.orderByChild('score').limitToLast(10).once('value');
+                // SỬA: Lấy tất cả + sort client-side (an toàn nhất)
+                const snapshot = await leaderboardRef.once('value');
                 const data = [];
-                snapshot.forEach(child => data.push({ key: child.key, ...child.val() }));
-                return data.reverse();
+                snapshot.child('leaderboard').forEach(child => {
+                    data.push({ key: child.key, ...child.val() });
+                });
+
+                // Sort theo score DESC + lấy top 10
+                return data
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 10);
             } catch (error) {
                 console.error("Lỗi load leaderboard:", error);
                 return [];
@@ -1139,28 +1146,28 @@
         };
 
         async function triggerGameOver() {
-    if (gameOverTriggered) return;
-    gameOverTriggered = true;
-    
-    console.log('🏁 GAME OVER:', score);
-    isGameOver = true;
-    gameOverScreen.style.display = 'flex';
-    finalScoreElement.textContent = score;
+            if (gameOverTriggered) return;
+            gameOverTriggered = true;
 
-    if (await checkHighScore(score)) {
-        setTimeout(() => showNameModal(score), 1000);
-    }
-}
+            console.log('🏁 GAME OVER:', score);
+            isGameOver = true;
+            gameOverScreen.style.display = 'flex';
+            finalScoreElement.textContent = score;
 
-// Override drop function
-const originalDrop = drop;
-drop = function () {
-    originalDrop.call(this);
+            if (await checkHighScore(score)) {
+                setTimeout(() => showNameModal(score), 1000);
+            }
+        }
 
-    if (currentPiece && collision(currentPiece.shape, currentPiece.x, currentPiece.y) && !gameOverTriggered) {
-        setTimeout(triggerGameOver, 300);
-    }
-};
+        // Override drop function
+        const originalDrop = drop;
+        drop = function () {
+            originalDrop.call(this);
+
+            if (currentPiece && collision(currentPiece.shape, currentPiece.x, currentPiece.y) && !gameOverTriggered) {
+                setTimeout(triggerGameOver, 300);
+            }
+        };
 
     </script>
 </body>
