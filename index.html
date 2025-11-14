@@ -253,7 +253,7 @@
         let level = 1;
         let lines = 0;
         let piecesUsed = 0;
-        let isGameOver = false;
+        let gameOver = false;
         let paused = false;
         let dropCounter = 0;
         let dropInterval = 1000;
@@ -698,7 +698,7 @@
                 drawNextPiece();
 
                 if (collision(currentPiece.shape, currentPiece.x, currentPiece.y)) {
-                    isGameOver = true;
+                    gameOver = true;
                     gameOverScreen.style.display = 'flex';
                     finalScoreElement.textContent = score;
                 }
@@ -1021,11 +1021,14 @@
         }
 
         async function saveScore(name, score) {
+            // Ensure score is a proper number before saving
+            const numericScore = (typeof score === 'number') ? score : (Number(score) || 0);
             const player = {
-                name: name.slice(0, 20),
-                score: score,
+                name: (name || 'Vô Danh').slice(0, 20),
+                score: numericScore,
                 date: new Date().toISOString()
             };
+            console.log('Saving score to Firebase:', player);
             await leaderboardRef.push(player);
         }
 
@@ -1087,6 +1090,7 @@
         function showNameModal(score) {
             scoreToSave = score;
             scoreEl.textContent = score;
+            console.log('Show name modal with score:', scoreToSave);
 
             // Tính rank (ước lượng)
             rankEl.textContent = 1;
@@ -1127,6 +1131,7 @@
         // Event listeners - KHÔNG BLOCK BẤT CỨ GÌ
         nameSubmit.onclick = async () => {
             const name = nameInput.value.trim() || 'Vô Danh';
+            console.log('Submitting name:', name, 'scoreToSave:', scoreToSave);
             await saveScore(name, scoreToSave);
             shootConfetti();
             hideNameModal();
@@ -1163,7 +1168,7 @@
             gameOverTriggered = true;
 
             console.log('🏁 GAME OVER:', score);
-            isGameOver = true;
+            gameOver = true;
             gameOverScreen.style.display = 'flex';
             finalScoreElement.textContent = score;
 
