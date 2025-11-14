@@ -184,10 +184,8 @@
             </div>
 
             <div class="name-input-group">
-                <input type="text" id="player-name-input" class="name-input" placeholder="Nhập tên của bạn..."
-                    maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                    inputmode="latin" lang="en" />
-
+                <input type="text" id="player-name-input" maxlength="20" autocomplete="off" autocorrect="off"
+                    autocapitalize="off" spellcheck="false" />
             </div>
 
             <div class="name-buttons">
@@ -1109,22 +1107,15 @@
                 }
             }, 400);
         }
-
-        // Chặn IME gây lag hoặc không gõ được
-        nameInput.addEventListener("compositionstart", e => {
-            e.stopPropagation();
+        nameInput.addEventListener("focus", () => {
+            // reset trạng thái IME về mặc định
+            nameInput.blur();
+            setTimeout(() => nameInput.focus(), 0);
         });
 
-        // Khi gõ xong tiếng Việt thì vẫn cập nhật bình thường
-        nameInput.addEventListener("compositionend", e => {
-            nameInput.value = e.target.value;
+        nameInput.addEventListener("compositionend", () => {
+            nameInput.value = nameInput.value;
         });
-
-        // Chặn ký tự lạ nếu cần (optional)
-        nameInput.addEventListener("input", () => {
-            nameInput.value = nameInput.value.replace(/[^a-zA-Z0-9\s]/g, "");
-        });
-
 
         function hideNameModal() {
             nameModal.classList.remove('show');
