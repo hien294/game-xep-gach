@@ -814,7 +814,7 @@ canvas {
 #player-name-input {
     width: 100% !important;
     padding: 12px 15px !important;
-    font-size: 1rem !important;
+    font-size: 16px !important;
     border: 2px solid var(--accent-color) !important;
     border-radius: 10px !important;
     background: rgba(25, 40, 55, 0.8) !important;
@@ -823,12 +823,6 @@ canvas {
     outline: none !important;
     transition: all 0.3s !important;
     caret-color: var(--text-light) !important;
-    -webkit-user-select: text !important;
-    user-select: text !important;
-    ime-mode: auto !important;
-    -webkit-ime-mode: auto !important;
-    /* Cho phép tất cả input methods */
-    -webkit-text-size-adjust: 100% !important;
 }
 
 #player-name-input:focus {

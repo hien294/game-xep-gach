@@ -843,6 +843,11 @@
         }
 
         function handleKeyPress(e) {
+            // NẾU MODAL NHẬP TÊN ĐANG HIỂN THỊ → KHÔNG CHẶN PHÍM
+            if (nameModal.style.display === 'flex') {
+                return;
+            }
+
             if (gameOver) return;
             if (e.keyCode === 80) { togglePause(); return; }
             if (paused) return;
@@ -1101,17 +1106,6 @@
         // Xóa các handlers cũ gây vấn đề focus
         // Input giờ hoạt động bình thường với mọi bàn phím
 
-        // Fix input để nhận tất cả ký tự (Tiếng Việt, English, etc)
-        nameInput.addEventListener('input', (e) => {
-            // Cho phép tất cả ký tự
-            e.target.value = e.target.value;
-        });
-
-        // Xử lý compositionend cho IME (khi user xong soạn Tiếng Việt)
-        nameInput.addEventListener('compositionend', (e) => {
-            e.target.value = e.target.value;
-        });
-
         function hideNameModal() {
             nameModal.classList.remove('show');
             setTimeout(() => nameModal.style.display = 'none', 300);
@@ -1130,7 +1124,7 @@
             }
         }
 
-        // Event listeners
+        // Event listeners - KHÔNG BLOCK BẤT CỨ GÌ
         nameSubmit.onclick = async () => {
             const name = nameInput.value.trim() || 'Vô Danh';
             await saveScore(name, scoreToSave);
@@ -1144,7 +1138,12 @@
             hideNameModal();
         };
 
-        nameInput.onkeypress = e => e.key === 'Enter' && nameSubmit.click();
+        // KHÔNG DÙNG onkeypress - Dùng keydown thay vì
+        nameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                nameSubmit.click();
+            }
+        });
 
         document.getElementById('leaderboard-toggle').onclick = () => {
             renderLeaderboard();
