@@ -185,8 +185,9 @@
 
             <div class="name-input-group">
                 <input type="text" id="player-name-input" class="name-input" placeholder="Nhập tên của bạn..."
-                    maxlength="20" inputmode="text" enterkeyhint="done" autocorrect="off" autocapitalize="off"
-                    spellcheck="false" autocomplete="off">
+                    maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    inputmode="latin" lang="en" />
+
             </div>
 
             <div class="name-buttons">
@@ -1085,51 +1086,49 @@
             scoreToSave = score;
             scoreEl.textContent = score;
 
+            // Tính rank (ước lượng)
             rankEl.textContent = 1;
             rankInfo.style.display = 'block';
             nameInput.value = '';
             nameModal.style.display = 'flex';
             nameModal.classList.add('show');
 
-            // BƯỚC 1: BẮT BUỘC NGƯỜI DÙNG PHẢI BẤM VÀO MODAL ĐỂ MỞ BÀN PHÍM
-            const openKeyboard = (e) => {
-                if (e.target === nameModal || e.target.closest('.name-content')) {
-                    setTimeout(() => {
-                        nameInput.focus();
-                        nameInput.select();
-                    }, 100);
-                    nameModal.removeEventListener('click', openKeyboard);
-                    nameModal.removeEventListener('touchstart', openKeyboard);
+            // SỬA: Focus khi người dùng CHẠM/CLICK vào modal
+            const focusInput = () => {
+                nameInput.focus();
+                nameInput.select(); // Bôi sẵn để dễ xóa
+                nameModal.removeEventListener('click', focusInput);
+            };
+            nameModal.addEventListener('click', focusInput);
+
+            // Tự động focus sau 300ms nếu không có tương tác
+            setTimeout(() => {
+                if (document.activeElement !== nameInput) {
+                    nameInput.focus();
+                    nameInput.select();
                 }
-            };
-
-            nameModal.addEventListener('click', openKeyboard);
-            nameModal.addEventListener('touchstart', openKeyboard);
-
-            // BƯỚC 2: TỰ ĐỘNG MỞ KHI BẤM NÚT "LƯU KỶ LỤC"
-            nameSubmit.onclick = async () => {
-                const name = nameInput.value.trim() || 'Vô Danh';
-                await saveScore(name, scoreToSave);
-                shootConfetti();
-                hideNameModal();
-                setTimeout(() => document.getElementById('leaderboard-toggle').click(), 600);
-            };
-
-            // BƯỚC 3: ENTER = LƯU
-            nameInput.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    nameSubmit.click();
-                }
-            };
+            }, 400);
         }
+
+        // Chặn IME gây lag hoặc không gõ được
+        nameInput.addEventListener("compositionstart", e => {
+            e.stopPropagation();
+        });
+
+        // Khi gõ xong tiếng Việt thì vẫn cập nhật bình thường
+        nameInput.addEventListener("compositionend", e => {
+            nameInput.value = e.target.value;
+        });
+
+        // Chặn ký tự lạ nếu cần (optional)
+        nameInput.addEventListener("input", () => {
+            nameInput.value = nameInput.value.replace(/[^a-zA-Z0-9\s]/g, "");
+        });
+
 
         function hideNameModal() {
             nameModal.classList.remove('show');
-            setTimeout(() => {
-                nameModal.style.display = 'none';
-                nameInput.value = '';
-            }, 300);
+            setTimeout(() => nameModal.style.display = 'none', 300);
         }
 
         function shootConfetti() {
