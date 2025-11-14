@@ -264,6 +264,7 @@
         let soundEnabled = true;
         let touchStartX = 0;
         let touchStartY = 0;
+        let gameOverTriggered = false
 
         function createBoard() {
             board = Array.from({ length: BOARD_HEIGHT }, () =>
@@ -1137,32 +1138,29 @@
             if (e.target.id === 'leaderboard-modal') e.target.style.display = 'none';
         };
 
-        // Game Over với Firebase
-        let gameOverTriggered = false;  // ← THÊM DÒNG NÀY
-
         async function triggerGameOver() {
-            if (gameOverTriggered) return;  // ← THÊM DÒNG NÀY
-            gameOverTriggered = true;       // ← THÊM DÒNG NÀY
+    if (gameOverTriggered) return;
+    gameOverTriggered = true;
+    
+    console.log('🏁 GAME OVER:', score);
+    isGameOver = true;
+    gameOverScreen.style.display = 'flex';
+    finalScoreElement.textContent = score;
 
-            console.log('🏁 GAME OVER:', score);
-            isGameOver = true;
-            gameOverScreen.style.display = 'flex';
-            finalScoreElement.textContent = score;
+    if (await checkHighScore(score)) {
+        setTimeout(() => showNameModal(score), 1000);
+    }
+}
 
-            if (await checkHighScore(score)) {
-                setTimeout(() => showNameModal(score), 1000);
-            }
-        }
+// Override drop function
+const originalDrop = drop;
+drop = function () {
+    originalDrop.call(this);
 
-        // Override drop function
-        const originalDrop = drop;
-        drop = function () {
-            originalDrop.call(this);
-
-            if (currentPiece && collision(currentPiece.shape, currentPiece.x, currentPiece.y) && !gameOverTriggered) {
-                setTimeout(triggerGameOver, 300);  // ← THÊM !gameOverTriggered
-            }
-        };
+    if (currentPiece && collision(currentPiece.shape, currentPiece.x, currentPiece.y) && !gameOverTriggered) {
+        setTimeout(triggerGameOver, 300);
+    }
+};
 
     </script>
 </body>
