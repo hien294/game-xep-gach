@@ -1026,8 +1026,8 @@
         }
 
         async function checkHighScore(score) {
-            const top10 = await loadTop10();
-            return top10.length < 10 || score > (top10[9]?.score || 0);
+            const top3 = await loadTop10(); // Hàm loadTop10() đã trả về top 3
+            return top3.length < 3 || score > (top3[2]?.score || 0);
         }
 
         async function renderLeaderboard() {
@@ -1090,7 +1090,22 @@
             nameInput.value = '';
             nameModal.style.display = 'flex';
             nameModal.classList.add('show');
-            setTimeout(() => nameInput.focus(), 300);
+
+            // SỬA: Focus khi người dùng CHẠM/CLICK vào modal
+            const focusInput = () => {
+                nameInput.focus();
+                nameInput.select(); // Bôi sẵn để dễ xóa
+                nameModal.removeEventListener('click', focusInput);
+            };
+            nameModal.addEventListener('click', focusInput);
+
+            // Tự động focus sau 300ms nếu không có tương tác
+            setTimeout(() => {
+                if (document.activeElement !== nameInput) {
+                    nameInput.focus();
+                    nameInput.select();
+                }
+            }, 400);
         }
 
         function hideNameModal() {
