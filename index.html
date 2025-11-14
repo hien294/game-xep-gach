@@ -184,8 +184,7 @@
             </div>
 
             <div class="name-input-group">
-                <input type="text" id="player-name-input" maxlength="20" autocomplete="off" autocorrect="off"
-                    autocapitalize="off" spellcheck="false" placeholder="Nhập tên của bạn..." />
+                <input type="text" id="player-name-input" maxlength="20" placeholder="Nhập tên của bạn..." />
             </div>
 
             <div class="name-buttons">
@@ -1091,39 +1090,16 @@
             nameModal.style.display = 'flex';
             nameModal.classList.add('show');
 
-            // SỬA: Focus khi người dùng CHẠM/CLICK vào modal
-            const focusInput = () => {
-                nameInput.focus();
-                nameInput.select(); // Bôi sẵn để dễ xóa
-                nameModal.removeEventListener('click', focusInput);
-            };
-            nameModal.addEventListener('click', focusInput);
-
-            // Tự động focus sau 300ms nếu không có tương tác
+            // Focus input ngay lập tức
             setTimeout(() => {
-                if (document.activeElement !== nameInput) {
-                    nameInput.focus();
-                    nameInput.select();
-                }
-            }, 400);
+                nameInput.focus();
+                nameInput.select();
+                nameInput.style.pointerEvents = 'auto';
+            }, 100);
         }
 
-        document.getElementById("player-name-input").addEventListener("compositionupdate", (e) => {
-            // Nếu đang ở keyboard English mà IME vẫn chạy → hủy IME
-            if (!e.data.match(/[a-zA-Z]/)) {
-                e.target.dispatchEvent(new Event("input"));
-            }
-        });
-
-        nameInput.addEventListener("focus", () => {
-            // reset trạng thái IME về mặc định
-            nameInput.blur();
-            setTimeout(() => nameInput.focus(), 0);
-        });
-
-        nameInput.addEventListener("compositionend", () => {
-            nameInput.value = nameInput.value;
-        });
+        // Xóa các handlers cũ gây vấn đề focus
+        // Input giờ hoạt động bình thường với mọi bàn phím
 
         function hideNameModal() {
             nameModal.classList.remove('show');
