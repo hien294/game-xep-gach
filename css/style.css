@@ -1051,6 +1051,14 @@ canvas {
     .sound-control {
         right: 6px;
     }
+
+    .leaderboard-control {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+        top: 6px;
+        right: 42px;
+    }
 }
 
 @media (max-width: 400px) {
@@ -1061,11 +1069,6 @@ canvas {
     .game-container {
         gap: 6px;
         max-height: calc(100vh - 6px);
-        max-height: calc(100dvh - 6px);
-    }
-
-    .game-header {
-        padding: 2px 3px 3px 3px;
     }
 
     .game-header h1 {
@@ -1079,17 +1082,11 @@ canvas {
 
     #tetris {
         max-height: calc(100vh - 165px);
-        max-height: calc(100dvh - 165px);
     }
 
     .mobile-btn {
         height: 48px;
         font-size: 1.1rem;
-    }
-
-    .mobile-controls {
-        gap: 5px;
-        margin-top: 5px;
     }
 
     .help-control,
@@ -1100,16 +1097,12 @@ canvas {
         top: 5px;
     }
 
-    .help-control {
-        left: 5px;
-    }
-
-    .sound-control {
-        right: 5px;
-    }
-
-    .game-board-container {
-        padding: 5px;
+    .leaderboard-control {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+        top: 5px;
+        right: 39px;
     }
 
     .game-board-container::before {
